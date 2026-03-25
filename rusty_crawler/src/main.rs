@@ -36,6 +36,7 @@ impl GameState for State{
 
         self.run_systems();
         player_input(self,ctx);
+        self.ecs.maintain();
 
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
