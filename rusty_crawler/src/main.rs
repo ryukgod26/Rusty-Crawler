@@ -28,16 +28,18 @@ struct LeftWalker{}
 
 impl GameState for State{
     fn tick(&mut self,ctx: &mut Rltk){
-        let positions = self.ecs.read_storage::<Position>();
-        let renderables = self.ecs.read_storage::<Renderable>();
 
         ctx.cls();
-        
+
         self.run_systems();
+
+        let positions = self.ecs.read_storage::<Position>();
+        let renderables = self.ecs.read_storage::<Renderable>();
+        
         for (position, render) in (&positions, &renderables).join() {
             ctx.set(position.x,position.y,render.fg,render.bg,render.glyph);
         }
-        ctx.print(1,1,"Hi");
+      //  ctx.print(1,1,"Hi");
     }
 }
 
