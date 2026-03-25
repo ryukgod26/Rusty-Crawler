@@ -37,6 +37,7 @@ impl GameState for State{
             ctx.set(position.x,position.y,render.fg,render.bg,render.glyph);
         }
         ctx.print(1,1,"Hi");
+        self.run_systems();
     }
 }
 
@@ -49,6 +50,14 @@ impl<`a> System<`a> for LeftWalker{
             pos.x -= 1;
             if pos.x < 0 {pos.x = 79;}
         }
+    }
+}
+
+impl State{
+    fn run_systens(&mut self){
+        let mut lw = LeftWalker{};
+        lw.run_now(&self.ecs);
+        self.ecs.maintain();
     }
 }
 
