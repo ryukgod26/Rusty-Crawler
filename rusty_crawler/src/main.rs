@@ -52,10 +52,10 @@ fn main() -> rltk::BError{
         .build();
 
     for i in 1..=10{
-        gc.ecs.create_entity()
+        gs.ecs.create_entity()
             .with(Position{x:i *7, y: 20})
             .with(Renderable{
-                glyph: rltk::to_cp437(1),
+                glyph: rltk::to_cp437('#'),
                 fg: RGB::named(rltk::YELLOW),
                 bg: RGB::named(rltk::BLACK),
             })
