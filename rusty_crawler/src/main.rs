@@ -14,7 +14,7 @@ struct Position{
     y: i32
 }
 
-#[detive(Component)]
+#[derive(Component)]
 struct Renderable{
     glyph: rltk::FontCharType,
     fg: RGB,
@@ -23,8 +23,15 @@ struct Renderable{
 
 impl GameState for State{
     fn tick(&mut self,ctx: &mut Rltk){
+        let positions = self.ecs.read_storage::<Position>();
+        let renderables = self.ecs.read_storage::<Renderable>();
+
         ctx.cls();
-        ctx.print(1,1,"Test");
+        
+        for (position, render) in (&positions, &renderables).join() {
+            ctx.set(position.x,position.y,render.fg,render.bg,render.glyph);
+        }
+        ctx.print(1,1,"Hi");
     }
 }
 
@@ -43,6 +50,17 @@ fn main() -> rltk::BError{
             bg: RGB::named(rltk::BLACK),
         })
         .build();
+
+    for i in 1..=10{
+        gc.ecs.create_entity()
+            .with(Position{x:i *7, y: 20})
+            .with(Renderable{
+                glyph: rltk::to_cp437(1),
+                fg: RGB::named(rltk::YELLOW),
+                bg: RGB::named(rltk::BLACK),
+            })
+        .build();
+    }
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50()
         .with_title("Rusty Crawler")
