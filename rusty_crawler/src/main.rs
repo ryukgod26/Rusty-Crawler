@@ -15,11 +15,16 @@ struct Position{
 }
 
 #[derive(Component)]
+struct LeftMover{}
+
+#[derive(Component)]
 struct Renderable{
     glyph: rltk::FontCharType,
     fg: RGB,
     bg:RGB
 }
+
+struct LeftWalker{}
 
 impl GameState for State{
     fn tick(&mut self,ctx: &mut Rltk){
@@ -35,13 +40,26 @@ impl GameState for State{
     }
 }
 
+impl<`a> System<`a> for LeftWalker{
+    type SystenData = (ReadStorage<`a, LeftMover>,
+                        WriteStorage<`a, Position>);
+
+    fn run(&mut self,(lefty,mut pos): Self::SystemData){
+        for (_lefty,pos) in (&lefty,mut pos).join(){
+            pos.x -= 1;
+            if pos.x < 0 {pos.x = 79;}
+        }
+    }
+}
+
 fn main() -> rltk::BError{
     let mut gs = State{
         ecs: World::new()
     };
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
-    
+    gs.ecs.register::<LeftMover>();
+
     gs.ecs.create_entity()
         .with(Position{x:30, y: 20})
         .with(Renderable{
@@ -56,9 +74,10 @@ fn main() -> rltk::BError{
             .with(Position{x:i *7, y: 20})
             .with(Renderable{
                 glyph: rltk::to_cp437('#'),
-                fg: RGB::named(rltk::YELLOW),
+                fg: RGB::named(rltk::RED),
                 bg: RGB::named(rltk::BLACK),
             })
+            .with(LeftMover{});
         .build();
     }
     use rltk::RltkBuilder;
