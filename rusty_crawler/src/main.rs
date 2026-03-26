@@ -4,6 +4,11 @@ use specs::prelude::*;
 use std::cmp::{max,min}; 
 use specs_derive::Component;
 
+#[derive(PartialEq,Copy,Clone)]
+enum TileType{
+    Wall,Floor
+}
+
 struct State{
     ecs: World
 }
@@ -95,7 +100,6 @@ fn main() -> rltk::BError{
                 fg: RGB::named(rltk::RED),
                 bg: RGB::named(rltk::BLACK),
             })
-            .with(LeftMover{})
         .build();
     }
     use rltk::RltkBuilder;
@@ -128,6 +132,38 @@ fn player_input(gs: &mut State,ctx: &mut Rltk){
          },
     }
 }
+
+pub fn xy_index(x: i32,y: i32) -> usize{
+    (y as usize * 80) + x as usize
+}
+
+fn new_map() -> Vec<TileType> {
+    let mut map = vec![TileType::Floor,80*50];
+
+    for x in 0..80{
+        map[xy_index(x,0)] = TileType::Wall;
+        map[xy_index(x,49)] = TileType::Wall;
+    }
+
+    for y in 0..50{
+        map[xy_index(0,y)] = TileType::Wall;
+        map[xy_index(79,y)] = TileType::Wall;
+    }
+
+    let mut rng = rltk::RandomNumberGenerator::new();
+
+    for _i in 0..400{
+        let x = rng.roll_dice(1,79);
+        let y = rng.roll_dice(1,49);
+        let idx = xy_index(x,y);
+
+        if idx != xy_index(40,25){
+            map[idx] = TileType::Wall;
+        }
+    map
+    
+}
+
 /*
 #[wasm_bindgen]
 pub fn start() {
