@@ -102,6 +102,7 @@ fn main() -> rltk::BError{
             })
         .build();
     }
+    gs.ecs.insert(new_map());
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50()
         .with_title("Rusty Crawler")
@@ -162,6 +163,27 @@ fn new_map() -> Vec<TileType> {
         }
     map
     
+}
+
+fn draw_map(map: &[TileType],ctx: &mut Rltkk) {
+    let mut x = 0;
+    let mut y = 0;
+    for tile in map.iter(){
+        match tile{
+            TileType::Wall=>{
+                ctx.set(x,y,RGB::from_32(0.,1.,0.),RGB::from_32(0.,0.,0.),Rltk::to_cp437('#'));
+            }
+            TileType::Floor=>{
+                ctx.set(x,y,RGB::from_32(.5,.5,.5),RGB::from_32(0.,0.,0.),Rltk::to_cp437('.'));
+            }
+        }
+        x += 1;
+        if x > 79{
+            x = 0;
+            y += 1;
+        }
+    }
+
 }
 
 /*
