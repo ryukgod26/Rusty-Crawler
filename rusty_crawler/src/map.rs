@@ -12,7 +12,7 @@ pub fn xy_index(x: i32,y: i32) -> usize{
     (y as usize * 80) + x as usize
 }
 
-pub fn new_map() -> Vec<TileType> {
+pub fn new_map_test() -> Vec<TileType> {
     let mut map = vec![TileType::Floor;80*50];
 
     for x in 0..80{
