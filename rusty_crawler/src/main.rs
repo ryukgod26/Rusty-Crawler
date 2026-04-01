@@ -68,8 +68,8 @@ fn main() -> rltk::BError{
     gs.ecs.register::<Player>();
 
     let (rooms,map) = new_map_rooms_and_corridors();
-    gc.ecs.insert(map);
-    let(player_x,player_y) = rooms[0].cemter();
+    gs.ecs.insert(map);
+    let(player_x,player_y) = rooms[0].center();
 
 
     gs.ecs.create_entity()

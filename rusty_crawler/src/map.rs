@@ -1,6 +1,7 @@
 use rltk::{RGB,Rltk};
 use super::{Rect};
 use std::cmp::{min,max};
+use rltk::RandomNumberGenerator;
 
 #[derive(PartialEq,Copy,Clone)]
 pub enum TileType{
@@ -60,7 +61,7 @@ pub fn draw_map(map: &[TileType],ctx: &mut Rltk) {
 
 }
 
-fn apply_room_to_map(room: &Rect, map: &mut [TileTyoe]) {
+fn apply_room_to_map(room: &Rect, map: &mut [TileType]) {
     for y in room.y1 +1..=room.y2{
         for x in room.x1+1..=room.x2{
             map[xy_index(x,y)] = TileType::Floor;
@@ -79,7 +80,7 @@ fn apply_horizontal_tunnel(map: &mut [TileType],x1: i32, x2: i32, y: i32) {
 
 fn apply_vertical_tunnel(map: &mut [TileType],y1: i32,y2: i32,x: i32) {
     for y in min(y1,y2)..=max(y1,y2){
-        let index = xy_indec(x,y);
+        let index = xy_index(x,y);
         if index > 0 && index < 80 * 50{
             map[index as usize] = TileType::Floor;
         }
@@ -89,12 +90,12 @@ fn apply_vertical_tunnel(map: &mut [TileType],y1: i32,y2: i32,x: i32) {
 pub fn new_map_rooms_and_corridors() -> (Vec<Rect>, Vec<TileType>){
     let mut map = vec![TileType::Wall;80*50];
 
-    let mut rooms: Vec<TileType> = vec::new();
+    let mut rooms: Vec<Rect> = Vec::new();
     const MAX_ROOMS: i32 = 30;
     const MIN_SIZE: i32 = 6;
     const MAX_SIZE: i32 = 10;
 
-    let mut rng = RandomNumberGeneratir::new();
+    let mut rng = RandomNumberGenerator::new();
 
     for _i in 0..MAX_ROOMS{
         let w = rng.range(MIN_SIZE,MAX_SIZE);
