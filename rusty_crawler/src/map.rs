@@ -8,6 +8,15 @@ pub enum TileType{
     Wall,Floor
 }
 
+pub struct Map{
+    pub tiles: Vec<TileType>,
+    pub rooms: Vec<Rect>,
+    pub width: i32,
+    pub height: i32
+}
+
+impl Map{
+
 pub fn xy_index(x: i32,y: i32) -> usize{
     (y as usize * 80) + x as usize
 }
@@ -87,21 +96,27 @@ fn apply_vertical_tunnel(map: &mut [TileType],y1: i32,y2: i32,x: i32) {
     }
 }
 
-pub fn new_map_rooms_and_corridors() -> (Vec<Rect>, Vec<TileType>){
-    let mut map = vec![TileType::Wall;80*50];
+pub fn new_map_rooms_and_corridors() -> Map{
+    let mut map = Map{
+        tiles: vec![TileType::Wall;80*50],
+        rooms: Vec::new(),
+        width: 80,
+        height: 50,
+    };
+    //let mut map = vec![TileType::Wall;80*50];
 
-    let mut rooms: Vec<Rect> = Vec::new();
+//    let mut rooms: Vec<Rect> = Vec::new();
     const MAX_ROOMS: i32 = 30;
     const MIN_SIZE: i32 = 6;
     const MAX_SIZE: i32 = 10;
 
     let mut rng = RandomNumberGenerator::new();
 
-    for _i in 0..MAX_ROOMS{
+    for i in 0..MAX_ROOMS{
         let w = rng.range(MIN_SIZE,MAX_SIZE);
         let h = rng.range(MIN_SIZE,MAX_SIZE);
-        let x = rng.roll_dice(1, 80 - w - 1) -1;
-        let y = rng.roll_dice(1,50 - h - 1) -1;
+        let x = rng.roll_dice(1, map.width - w - 1) -1;
+        let y = rng.roll_dice(1,map.height - h - 1) -1;
         let new_room = Rect::new(x,y,w,h);
         let mut ok = true;
 
@@ -110,11 +125,12 @@ pub fn new_map_rooms_and_corridors() -> (Vec<Rect>, Vec<TileType>){
         }
 
         if ok{
-            apply_room_to_map(&new_room, &mut map);
+            map.apply_room_to_map(&new_room, &mut map);
 
             if !rooms.is_empty(){
                 let (new_x,new_y) = new_room.center();
-                let (prev_x,prev_y) = rooms[rooms.len() - 1].center();
+                //let (prev_x,prev_y) = rooms[rooms.len() - 1].center();
+                let (prev_x,prev_y) =  map.rooms[map.rooms.len() - 1].center();
                 if rng.range(0,2) == 1{
                     apply_horizontal_tunnel(&mut map,prev_x, new_x, prev_y);
                     apply_vertical_tunnel(&mut map, prev_y, new_y, new_x);
@@ -123,9 +139,10 @@ pub fn new_map_rooms_and_corridors() -> (Vec<Rect>, Vec<TileType>){
                     apply_horizontal_tunnel(&mut map, prev_x, new_x, new_y);
                 }
             }
-            rooms.push(new_room);
+            map.rooms.push(new_room);
         }
 
     }
     (rooms,map)
+}
 }
