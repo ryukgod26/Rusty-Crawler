@@ -1,7 +1,7 @@
 use rltk::{RGB,Rltk};
 use super::{Rect};
 use std::cmp::{min,max};
-use rltk::RandomNumberGenerator;
+use rltk::{RandomNumberGenerator,Algorithm2D,BaseMap};
 
 #[derive(PartialEq,Copy,Clone)]
 pub enum TileType{
@@ -13,6 +13,18 @@ pub struct Map{
     pub rooms: Vec<Rect>,
     pub width: i32,
     pub height: i32
+}
+
+impl Algorithm2D for Map{
+    fn dimensions(&self) -> Point{
+        Point::new(self.width,self.heigbt)
+    }
+}
+
+impl BaseMap for Map{
+    fn is_opaque(&self, idx: usize) -> bool{
+        self.tiles[idx as usize] == TileType::Wall
+    }
 }
 
 impl Map{

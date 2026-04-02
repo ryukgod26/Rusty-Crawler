@@ -2,10 +2,12 @@ mod components;
 mod map;
 mod player;
 mod rect;
+mod visibility_system;
 pub use components::*;
 pub use map::*;
 pub use player::*;
 pub use rect::*;
+use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB};
 use specs::prelude::*;
 
