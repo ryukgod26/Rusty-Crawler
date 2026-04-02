@@ -1,4 +1,4 @@
-use super::{Position,Player,TileType,State,xy_index};
+use super::{Position,Player,TileType,State,Map};
 use rltk::{Rltk,VirtualKeyCode};
 use std::cmp::{max,min}; 
 use specs::prelude::*;
