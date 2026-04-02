@@ -52,8 +52,10 @@ impl<'a> System<'a> for LeftWalker{
 
 impl State{
     fn run_systems(&mut self){
-        let mut lw = LeftWalker{};
-        lw.run_now(&self.ecs);
+//        let mut lw = LeftWalker{};
+//        lw.run_now(&self.ecs);
+        let mut vis = VisibilitySystem{};
+        vis.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
