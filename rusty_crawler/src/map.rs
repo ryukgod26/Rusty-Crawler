@@ -1,7 +1,8 @@
 use rltk::{RGB,Rltk};
 use super::{Rect};
 use std::cmp::{min,max};
-use rltk::{RandomNumberGenerator,Algorithm2D,BaseMap};
+use rltk::{RandomNumberGenerator,Algorithm2D,BaseMap,Point};
+use specs::prelude::*;
 
 #[derive(PartialEq,Copy,Clone)]
 pub enum TileType{
@@ -19,7 +20,7 @@ pub struct Map{
 
 impl Algorithm2D for Map{
     fn dimensions(&self) -> Point{
-        Point::new(self.width,self.heigbt)
+        Point::new(self.width,self.height)
     }
 }
 
@@ -31,7 +32,7 @@ impl BaseMap for Map{
 
 impl Map{
 
-pub fn xy_index(&self,x: i32,y:i i32) -> usize{
+pub fn xy_index(&self,x: i32,y:i32) -> usize{
     (y as usize * 80) + x as usize
 }
 
@@ -93,30 +94,30 @@ pub fn new_map_rooms_and_corridors() -> Map{
         let new_room = Rect::new(x,y,w,h);
         let mut ok = true;
 
-        for other_room in rooms.iter(){
+        for other_room in map.rooms.iter(){
             if new_room.intersect(other_room) {ok = false}
         }
 
         if ok{
-            map.apply_room_to_map(&new_room, &mut map);
+            map.apply_room_to_map(&new_room);
 
-            if !rooms.is_empty(){
+            if !map.rooms.is_empty(){
                 let (new_x,new_y) = new_room.center();
                 //let (prev_x,prev_y) = rooms[rooms.len() - 1].center();
                 let (prev_x,prev_y) =  map.rooms[map.rooms.len() - 1].center();
                 if rng.range(0,2) == 1{
-                    Self::apply_horizontal_tunnel(prev_x, new_x, prev_y);
-                    Self::apply_vertical_tunnel(prev_y, new_y, new_x);
+                    map.apply_horizontal_tunnel(prev_x, new_x, prev_y);
+                    map.apply_vertical_tunnel(prev_y, new_y, new_x);
                 } else{
-                    Self::apply_vertical_tunnel(prev_y, new_y, prev_x);
-                    Self::apply_horizontal_tunnel(prev_x, new_x, new_y);
+                    map.apply_vertical_tunnel(prev_y, new_y, prev_x);
+                    map.apply_horizontal_tunnel(prev_x, new_x, new_y);
                 }
             }
             map.rooms.push(new_room);
         }
 
     }
-    (rooms,map)
+    map
 }
 }
 
@@ -163,21 +164,19 @@ pub fn draw_map(ecs: &World,ctx: &mut Rltk){
                 let glyph;
                 let mut fg;
                 match tile{
-                    TileType::Floor{
+                    TileType::Floor => {
 //                        ctx.set(x,y,RGB::from_f32(.5,.5,.5),RGB::from_f32(0.,0.,0.),rltk::to_cp437('.'));
-
-
                         glyph = rltk::to_cp437('.');
-                        fg = RGB::from_f32(0.,.5,.5);
+                        fg = RGB::from_f32(0.0,0.5,0.5);
                     }
-                    TileType::Wall{
+                    TileType::Wall => {
   //                      ctx.set(x,y,RGB::from_f32(0.,1.,0.),RGB::from_f32(0.,0.,0.),rltk::to_cp437('#'));
                     
-                        glyph = rltk::to_cp436('#');
+                        glyph = rltk::to_cp437('#');
                         fg = RGB::from_f32(0.,1.,0.);
                     }
                 }
-                if !map.visible_tiles[idx] {fg = fg.to_grayscale() }
+                if !map.visible_tiles[idx] {fg = fg.to_greyscale() }
                 ctx.set(x,y,fg,RGB::from_f32(0.,0.,0.),glyph);
             }
     //    }
@@ -190,30 +189,30 @@ pub fn draw_map(ecs: &World,ctx: &mut Rltk){
 }
 
 
-pub fn new_map_test() -> Vec<TileType> {
-    let mut map = vec![TileType::Floor;80*50];
+// pub fn new_map_test() -> Vec<TileType> {
+//     let mut map = vec![TileType::Floor;80*50];
 
-    for x in 0..80{
-        map[Self::xy_index(x,0)] = TileType::Wall;
-        map[Self::xy_index(x,49)] = TileType::Wall;
-    }
+//     for x in 0..80{
+//         map[Self::xy_index(x,0)] = TileType::Wall;
+//         map[Self::xy_index(x,49)] = TileType::Wall;
+//     }
 
-    for y in 0..50{
-        map[Self::xy_index(0,y)] = TileType::Wall;
-        map[Self::xy_index(79,y)] = TileType::Wall;
-    }
+//     for y in 0..50{
+//         map[Self::xy_index(0,y)] = TileType::Wall;
+//         map[Self::xy_index(79,y)] = TileType::Wall;
+//     }
 
-    let mut rng = rltk::RandomNumberGenerator::new();
+//     let mut rng = rltk::RandomNumberGenerator::new();
 
-    for _i in 0..400{
-        let x = rng.roll_dice(1,79);
-        let y = rng.roll_dice(1,49);
-        let idx = Self::xy_index(x,y);
+//     for _i in 0..400{
+//         let x = rng.roll_dice(1,79);
+//         let y = rng.roll_dice(1,49);
+//         let idx = Self::xy_index(x,y);
 
-        if idx != Self::xy_index(40,25){
-            map[idx] = TileType::Wall;
-        }
-    }
-    map
+//         if idx != Self::xy_index(40,25){
+//             map[idx] = TileType::Wall;
+//         }
+//     }
+//     map
     
-}
+// }
