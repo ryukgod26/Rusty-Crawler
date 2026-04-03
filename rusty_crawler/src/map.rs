@@ -13,7 +13,8 @@ pub struct Map{
     pub rooms: Vec<Rect>,
     pub width: i32,
     pub height: i32,
-    pub revealed_tiles: Vec<bool>
+    pub revealed_tiles: Vec<bool>,
+    pub visible_tiles: Vec<bool>
 }
 
 impl Algorithm2D for Map{
@@ -72,7 +73,8 @@ pub fn new_map_rooms_and_corridors() -> Map{
         rooms: Vec::new(),
         width: 80,
         height: 50,
-        revealed_tiles: vec![false;80*50]
+        revealed_tiles: vec![false;80*50],
+        visible_tiles: vec![false; 80*50]
     };
     //let mut map = vec![TileType::Wall;80*50];
 
@@ -146,6 +148,9 @@ pub fn draw_map(ecs: &World,ctx: &mut Rltk){
 //    let mut players = ecs.write_storage::<Player>();
     let map = ecs.fetch::<Map>();
 
+    let mut x = 0;
+    let mut y = 0;
+
   //  for(_player,viewshed) in (&mut players, &mut viewsheds).join(){
       for(idx,tile) in map.tiles.iter().enumerate(){ 
 //        let mut x = 0;
@@ -155,14 +160,25 @@ pub fn draw_map(ecs: &World,ctx: &mut Rltk){
       //      let pt = Point::new(x,y);
         //    if viewshed.visible_tiles.contains(&pt) {
               if map.revealed_tiles[idx]{
+                let glyph;
+                let mut fg;
                 match tile{
                     TileType::Floor{
-                        ctx.set(x,y,RGB::from_f32(.5,.5,.5),RGB::from_f32(0.,0.,0.),rltk::to_cp437('.'));
+//                        ctx.set(x,y,RGB::from_f32(.5,.5,.5),RGB::from_f32(0.,0.,0.),rltk::to_cp437('.'));
+
+
+                        glyph = rltk::to_cp437('.');
+                        fg = RGB::from_f32(0.,.5,.5);
                     }
                     TileType::Wall{
-                        ctx.set(x,y,RGB::from_f32(0.,1.,0.),RGB::from_f32(0.,0.,0.),rltk::to_cp437('#'));
+  //                      ctx.set(x,y,RGB::from_f32(0.,1.,0.),RGB::from_f32(0.,0.,0.),rltk::to_cp437('#'));
+                    
+                        glyph = rltk::to_cp436('#');
+                        fg = RGB::from_f32(0.,1.,0.);
                     }
                 }
+                if !map.visible_tiles[idx] {fg = fg.to_grayscale() }
+                ctx.set(x,y,fg,RGB::from_f32(0.,0.,0.),glyph);
             }
     //    }
     x += 1;
