@@ -30,7 +30,6 @@ impl GameState for State{
 
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
-        let map = self.ecs.fetch::<Vec<TileType>>();
         draw_map(&self.ecs,ctx);
 
         for (position, render) in (&positions, &renderables).join() {
