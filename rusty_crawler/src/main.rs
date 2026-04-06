@@ -70,7 +70,7 @@ fn main() -> rltk::BError{
     gs.ecs.register::<LeftMover>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
-
+    gs.ecs.register::<Monster>();
 
     let map= Map::new_map_rooms_and_corridors();
     let(player_x,player_y) = map.rooms[0].center();
@@ -93,10 +93,10 @@ fn main() -> rltk::BError{
                 bg: RGB::named(rltk::BLACK)
             })
             .with(Viewshed{visible_tiles: Vec::new(),range: 8, dirty: true})
+            .with(Monster{})
             .build();
 
     gs.ecs.insert(map);
-
 
     gs.ecs.create_entity()
         .with(Position{x:player_x, y: player_y})
