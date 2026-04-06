@@ -3,27 +3,39 @@ mod map;
 mod player;
 mod rect;
 mod visibility_system;
+mod monster_ai_system;
 pub use components::*;
 pub use map::*;
 pub use player::*;
 pub use rect::*;
+pub use monster_ai_system::*;
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,RltkBuilder};
 use specs::prelude::*;
 
 
+#[derive(PartialEq,Copy,Clone)]
+pub enum RunState{ Paused, Running }
 
 pub struct State{
-    ecs: World
+    pub ecs: World,
+    pub runstate: RunState
 }
 
 struct LeftWalker{}
+
 
 impl GameState for State{
     fn tick(&mut self,ctx: &mut Rltk){
 
         ctx.cls();
-
+        if self.runstate == RunState::Running{
+            self.run_systems();
+            self.runstate = RunState::Paused;
+        } else{
+            self.runstate = player_input(self,ctx);
+        }
+/*
         self.run_systems();
         player_input(self,ctx);
         self.ecs.maintain();
@@ -35,6 +47,7 @@ impl GameState for State{
         for (position, render) in (&positions, &renderables).join() {
             ctx.set(position.x,position.y,render.fg,render.bg,render.glyph);
         }
+*/
       //  ctx.print(1,1,"Hi");
     }
 }
@@ -57,13 +70,16 @@ impl State{
 //        lw.run_now(&self.ecs);
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
+        let mut mob = MonsterAI{};
+        mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
 
 fn main() -> rltk::BError{
     let mut gs = State{
-        ecs: World::new()
+        ecs: World::new(),
+        runstate: RunState::Running
     };
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
