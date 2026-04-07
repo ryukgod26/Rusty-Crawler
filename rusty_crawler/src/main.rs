@@ -87,15 +87,18 @@ fn main() -> rltk::BError{
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Monster>();
+    gs.ecs.register::<Name>();
 
     let map= Map::new_map_rooms_and_corridors();
     let(player_x,player_y) = map.rooms[0].center();
 
 
     let mut rng = rltk::RandomNumberGenerator::new();
-    for room in map.rooms.iter().skip(1){
+
+    for (i,room) in map.rooms.iter().skip(1).enumerate(){
         let (x,y) = room.center();
         let glyph: rltk::FontCharType;
+        let name: String;
         let roll = rng.roll_dice(1,2);
         match roll{
             1 => { glyph = rltk::to_cp437('g')}
@@ -110,7 +113,9 @@ fn main() -> rltk::BError{
             })
             .with(Viewshed{visible_tiles: Vec::new(),range: 8, dirty: true})
             .with(Monster{})
+            .with(Name{name: format!("{} #{}",&name,i)}
             .build();
+        }
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new{player_x,player_y});
@@ -126,7 +131,6 @@ fn main() -> rltk::BError{
         .with(Viewshed{visible_tiles: Vec::new(),range: 8,dirty: true})
         .build();
 
-    }
 
     // for i in 1..=10{
     //     gs.ecs.create_entity()
