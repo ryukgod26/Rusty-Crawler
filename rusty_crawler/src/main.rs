@@ -10,7 +10,7 @@ pub use player::*;
 pub use rect::*;
 pub use monster_ai_system::*;
 use visibility_system::VisibilitySystem;
-use rltk::{Rltk,GameState,RGB,RltkBuilder};
+use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
 
 
@@ -104,7 +104,7 @@ fn main() -> rltk::BError{
             1 => { glyph = rltk::to_cp437('g')}
             _ => { glyph = rltk::to_cp437('o')}
         }
-        gc.ecs.create_entity()
+        gs.ecs.create_entity()
             .with(Position{x,y})
             .with(Renderable{
                 glyph: glyph,
@@ -113,12 +113,10 @@ fn main() -> rltk::BError{
             })
             .with(Viewshed{visible_tiles: Vec::new(),range: 8, dirty: true})
             .with(Monster{})
-            .with(Name{name: format!("{} #{}",&name,i)}
+            .with(Name{name: format!("{} #{}",&name,i)})
             .build();
         }
 
-    gs.ecs.insert(map);
-    gs.ecs.insert(Point::new{player_x,player_y});
 
     gs.ecs.create_entity()
         .with(Position{x:player_x, y: player_y})
@@ -148,14 +146,10 @@ fn main() -> rltk::BError{
         .with_title("Rusty Crawler")
         .build()?;
 //    let gs = State{};
+    gs.ecs.insert(map);
+    gs.ecs.insert(Point::new(player_x,player_y));
     rltk::main_loop(context,gs)
 }
-
-
-
-
-
-
 
 /*
 #[wasm_bindgen]

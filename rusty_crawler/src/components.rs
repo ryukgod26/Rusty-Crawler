@@ -31,7 +31,7 @@ pub struct Viewshed{
 #[derive(Component,Debug)]
 pub struct Monster{}
 
-#[derive(Componenet,Debug)]
+#[derive(Component,Debug)]
 pub struct Name{
     pub name: String
 }
