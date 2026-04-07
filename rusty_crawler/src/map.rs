@@ -68,6 +68,26 @@ fn apply_vertical_tunnel(&mut self,y1: i32,y2: i32,x: i32) {
     }
 }
 
+fn get_available_exits(&self,idx: usize) -> rltk::SmallVec<[(usize,f32); 10]>{
+    let mut exits = rltk::SmallVec::new();
+    let x = idx as i32 % self.width;
+    let y = idx as i32 / self.width;
+    let w = self.width as usize;
+
+    if self.is_exit_valid(x-1,y) {exits.push((idx-1,1.0))}
+    if self.is_exit_valid(x+1,y) {exits.push((idx+1,1.0))}
+    if self.is_exit_valid(x,y-1) {exits.push((idx-w,1.0))}
+    if self.is_exit_valid(x,y+1) {exits.push((idx+w,1.0))}
+
+    exits
+}
+
+fn is_exit_valid(&self,x: i32,y: i32) -> bool{
+    if x < 1 || x > self.width-1 || y < 1 || y > self.height-1 {return false;}
+    let idx = xy_index(x,y);
+    self.tiles[idx as usize] != TileType::Wall
+}
+
 pub fn new_map_rooms_and_corridors() -> Map{
     let mut map = Map{
         tiles: vec![TileType::Wall;80*50],
