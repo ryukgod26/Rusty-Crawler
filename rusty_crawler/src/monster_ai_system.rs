@@ -21,7 +21,11 @@ impl <'a> System<'a> for MonsterAI{
 
         for (mut viewshed,_monster,name,mut pos) in (&mut viewshed,&monster, name, &mut player_pos).join(){
             if viewshed.visible_tiles.contains(&*player_pos){
+                let distance = rltk::DistanceAlg::Phythagoras.distance2d(Point::new(pos.x,pos.y),*player_pos);
+                if distance < 1.5{
                 console::log(&format!("{} Monster Speaks",name.name));
+                return;
+                }
                 let path = rltk::a_star_search(
                     map.xy_index(pos.x,pos.y) as i32,
                     map.xy_index(player_pos.x,player_pos.y) as i32,
