@@ -4,11 +4,13 @@ mod player;
 mod rect;
 mod visibility_system;
 mod monster_ai_system;
+mod map_indexing_system; 
 pub use components::*;
 pub use map::*;
 pub use player::*;
 pub use rect::*;
 pub use monster_ai_system::*;
+pub use map_indexing_system::*;
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
@@ -72,6 +74,8 @@ impl State{
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI{};
         mob.run_now(&self.ecs);
+        let mut mapindex = MapIndexingSystem{};
+        mapindex.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
