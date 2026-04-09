@@ -5,12 +5,14 @@ mod rect;
 mod visibility_system;
 mod monster_ai_system;
 mod map_indexing_system; 
+mod damage_system;
 pub use components::*;
 pub use map::*;
 pub use player::*;
 pub use rect::*;
 pub use monster_ai_system::*;
 pub use map_indexing_system::*;
+pub use damage_system::*;
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
@@ -33,6 +35,7 @@ impl GameState for State{
         ctx.cls();
         if self.runstate == RunState::Running{
             self.run_systems();
+            damage_systems::delete_the_dead(&mut self.ecs);
             self.runstate = RunState::Paused;
         } else{
             self.runstate = player_input(self,ctx);
