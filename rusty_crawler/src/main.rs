@@ -7,6 +7,7 @@ mod monster_ai_system;
 mod map_indexing_system; 
 mod melee_combat_system;
 mod damage_system;
+mod gui;
 pub use components::*;
 pub use map::*;
 pub use player::*;
@@ -15,6 +16,7 @@ pub use monster_ai_system::MonsterAI;
 pub use map_indexing_system::*;
 pub use melee_combat_system::MeleeCombatSystem;
 pub use damage_system::*;
+pub use gui::*;
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
@@ -76,6 +78,7 @@ impl GameState for State{
             if map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph); }
         }
 
+        gui::draw_ui(&self.ecs,ctx);
         // if self.runstate == RunState::Running{
         //     self.run_systems();
         //     damage_systems::delete_the_dead(&mut self.ecs);
