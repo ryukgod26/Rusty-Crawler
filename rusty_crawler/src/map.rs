@@ -4,6 +4,10 @@ use std::cmp::{min,max};
 use rltk::{RandomNumberGenerator,Algorithm2D,BaseMap,Point};
 use specs::prelude::*;
 
+const MAPWIDTH: usize = 80;
+const MAPHEIGHT: usize = 50;
+const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
+
 #[derive(PartialEq,Copy,Clone)]
 pub enum TileType{
     Wall,Floor
@@ -60,7 +64,7 @@ fn apply_room_to_map(&mut self,room: &Rect) {
 fn apply_horizontal_tunnel(&mut self,x1: i32, x2: i32, y: i32) {
     for x in min(x1,x2)..=max(x1,x2){
         let index = self.xy_index(x,y);
-        if index > 0 && index < 80*50{
+        if index > 0 && index < MAPCOUNT{
 //            map[index as usize] = TileType::Floor;
             self.tiles[index as usize] = TileType::Floor;
         }
@@ -70,7 +74,7 @@ fn apply_horizontal_tunnel(&mut self,x1: i32, x2: i32, y: i32) {
 fn apply_vertical_tunnel(&mut self,y1: i32,y2: i32,x: i32) {
     for y in min(y1,y2)..=max(y1,y2){
         let index = self.xy_index(x,y);
-        if index > 0 && index < 80 * 50{
+        if index > 0 && index < MAPCOUNT{
 //            map[index as usize] = TileType::Floor;
             self.tiles[index as usize] = TileType::Floor;
         }
@@ -119,14 +123,14 @@ pub fn clear_content_index(&mut self){
 
 pub fn new_map_rooms_and_corridors() -> Map{
     let mut map = Map{
-        tiles: vec![TileType::Wall;80*50],
+        tiles: vec![TileType::Wall;MAPCOUNT],
         rooms: Vec::new(),
         width: 80,
         height: 50,
-        revealed_tiles: vec![false;80*50],
-        visible_tiles: vec![false; 80*50],
-        blocked: vec![false;80*50],
-        tile_content: vec![Vec::new(); 80*50]
+        revealed_tiles: vec![false;MAPCOUNT],
+        visible_tiles: vec![false; MAPCOUNT],
+        blocked: vec![false;MAPCOUNT],
+        tile_content: vec![Vec::new(); MAPCOUNT]
     };
     //let mut map = vec![TileType::Wall;80*50];
 
