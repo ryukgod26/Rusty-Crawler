@@ -1,6 +1,6 @@
 use crate::Viewshed;
 
-use super::{Position,Player,TileType,State,Map,RunState,CombatStats,WantsToMelee};
+use super::{Position,Player,State,Map,RunState,CombatStats,WantsToMelee};
 use rltk::{Rltk,VirtualKeyCode,Point};
 use std::cmp::{max,min}; 
 use specs::prelude::*;
@@ -11,6 +11,7 @@ pub fn try_move_player(delta_x: i32,delta_y: i32,ecs: &mut World){
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let mut combat_stats = ecs.read_storage::<CombatStats>();
     let entities = ecs.entities();
+    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let map = ecs.fetch::<Map>();
 
     for(_player,pos,viewshed,entity) in (&mut players,&mut positions, &mut viewsheds,&entities).join(){
@@ -22,13 +23,13 @@ pub fn try_move_player(delta_x: i32,delta_y: i32,ecs: &mut World){
                 wants_to_melee.insert(entity,WantsToMelee{ target: *potential_target }).expect("Add Target Failed");
                 return;
             }
-            match target{
-                None => {}
-                Some(t) => {
-                    console::log(&format!("Attack!!!"));
-                    return;
-                }
-            }
+            // match target{
+            //     None => {}
+            //     Some(t) => {
+            //         console::log(&format!("Attack!!!"));
+            //         return;
+            //     }
+            // }
         }
     
         if !map.blocked[destination_idx] {
@@ -74,7 +75,7 @@ pub fn player_input(gs: &mut State,ctx: &mut Rltk) -> RunState{
 
             VirtualKeyCode::Numpad7 |
             VirtualKeyCode::U
-            => try_move_player(-1,-1,&mut gs.ecs)
+            => try_move_player(-1,-1,&mut gs.ecs),
 
             VirtualKeyCode::Numpad3 |
             VirtualKeyCode::N
@@ -82,7 +83,7 @@ pub fn player_input(gs: &mut State,ctx: &mut Rltk) -> RunState{
 
             VirtualKeyCode::Numpad1 |
             VirtualKeyCode::B
-            => try_move_player(-1,1,&mut gs.ecs)
+            => try_move_player(-1,1,&mut gs.ecs),
 
             _ => { return RunState::AwaitingInput }
          },
