@@ -10,13 +10,18 @@ pub fn try_move_player(delta_x: i32,delta_y: i32,ecs: &mut World){
     let mut players = ecs.write_storage::<Player>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let mut combat_stats = ecs.read_storage::<CombatStats>();
+    let entities = ecs.entities();
     let map = ecs.fetch::<Map>();
 
-    for(_player,pos,viewshed) in (&mut players,&mut positions, &mut viewsheds).join(){
+    for(_player,pos,viewshed,entity) in (&mut players,&mut positions, &mut viewsheds,&entities).join(){
         let destination_idx = map.xy_index(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in map.tile_content[destination_idx].iter(){
             let target = combat_stats.get(*potential_target);
+            if let Some(_target) = target{
+                wants_to_melee.insert(entity,WantsToMelee{ target: *potential_target }).expect("Add Target Failed");
+                return;
+            }
             match target{
                 None => {}
                 Some(t) => {
