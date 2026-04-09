@@ -100,7 +100,7 @@ fn get_available_exits(&self,idx: usize) -> rltk::SmallVec<[(usize,f32); 10]>{
 
 fn is_exit_valid(&self,x: i32,y: i32) -> bool{
     if x < 1 || x > self.width-1 || y < 1 || y > self.height-1 {return false;}
-    let idx = xy_index(x,y);
+    let idx = self.xy_index(x,y);
     !self.blocked[idx]
 }
 

@@ -3,7 +3,7 @@ use super::{CombatStats,SufferDamage};
 
 pub struct DamageSystem{}
 
-impl<'a> System<<'a> for DamageSystem{
+impl<'a> System<'a> for DamageSystem{
     type SystemData = (WriteStorage<'a, CombatStats>,
                         WriteStorage<'a, SufferDamage>);
 
@@ -17,8 +17,7 @@ impl<'a> System<<'a> for DamageSystem{
     }
 }
 
-impl DamageSystem{
-    pub fn delete_the_dead(ecs: &mut World){
+pub fn delete_the_dead(ecs: &mut World){
         let mut dead: Vec<Entity> = Vec::new();
         //Using this to make the borrow checker happy just got to know about this
         {
@@ -33,4 +32,3 @@ impl DamageSystem{
             ecs.delete_entity(victim).expect("Unable to Delete.");
         }
     }
-}

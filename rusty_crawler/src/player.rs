@@ -1,6 +1,6 @@
 use crate::Viewshed;
 
-use super::{Position,Player,TileType,State,Map,RunState};
+use super::{Position,Player,TileType,State,Map,RunState,CombatStats,WantsToMelee};
 use rltk::{Rltk,VirtualKeyCode,Point};
 use std::cmp::{max,min}; 
 use specs::prelude::*;

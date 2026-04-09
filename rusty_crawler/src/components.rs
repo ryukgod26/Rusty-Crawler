@@ -47,7 +47,7 @@ pub struct CombatStats{
     pub power: i32
 }
 
-#[derive(Component,Debug,ConvertSaveload,Clone)]
+#[derive(Component,Debug,Clone)]
 pub struct WantsToMelee{
     pub target: Entity
 }
@@ -60,7 +60,7 @@ pub struct SufferDamage{
 impl SufferDamage{
     pub fn new_damage(store: &mut WriteStorage<SufferDamage>,victim: Entity, amount: i32){
         if let Some(suffering) = store.get_mut(victim){
-            sufferring.amount.push(amount);
+            suffering.amount.push(amount);
         } else{
             let dmg = SufferDamage{ amount: vec![amount] };
             store.insert(victim,dmg).expect("Unable to Insert Damage");
