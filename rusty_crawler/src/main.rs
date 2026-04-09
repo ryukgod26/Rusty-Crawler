@@ -150,6 +150,10 @@ fn main() -> rltk::BError{
     let map= Map::new_map_rooms_and_corridors();
     let(player_x,player_y) = map.rooms[0].center();
 
+    use rltk::RltkBuilder;
+    let context = RltkBuilder::simple80x50()
+        .with_title("Rusty Crawler")
+        .build()?;
 
     let mut rng = rltk::RandomNumberGenerator::new();
 
@@ -159,8 +163,8 @@ fn main() -> rltk::BError{
         let name: String;
         let roll = rng.roll_dice(1,2);
         match roll{
-            1 => { glyph = rltk::to_cp437('g')}
-            _ => { glyph = rltk::to_cp437('o')}
+            1 => { glyph = rltk::to_cp437('g'); name="Goblin".to_string(); }
+            _ => { glyph = rltk::to_cp437('o'); name="Orc".to_string();}
         }
         gs.ecs.create_entity()
             .with(Position{x,y})
@@ -177,7 +181,7 @@ fn main() -> rltk::BError{
             .build();
         }
 
-    gs.ecs.create_entity()
+    let player_entity = gs.ecs.create_entity()
         .with(Position{x:player_x, y: player_y})
         .with(Renderable{
             glyph: rltk::to_cp437('@'),
@@ -202,9 +206,7 @@ fn main() -> rltk::BError{
     //     .build();
     // }
     // gs.ecs.insert(new_map());
-    let context = RltkBuilder::simple80x50()
-        .with_title("Rusty Crawler")
-        .build()?;
+    
 //    let gs = State{};
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x,player_y));
