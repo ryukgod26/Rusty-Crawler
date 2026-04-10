@@ -22,9 +22,25 @@ pub fn delete_the_dead(ecs: &mut World){
         //Using this to make the borrow checker happy just got to know about this
         {
             let combat_stats = ecs.read_storage::<CombatStats>();
+            let players = ecs.read_storage::<Player>();
+            let names = ecs.read_storage::<Name>();
+            let mut log = ecs.write_storage::<GameLog>();
             let entities = ecs.entities();
+
             for(entity,stats) in (&entities,&combat_stats).join() {
-                if stats.hp < 1 { dead.push(entity); }
+                if stats.hp < 1 {
+                    let player = player.get(entity);
+                    match player{
+                    None => {
+                        if let Some(victim) = victim {
+                            log.entries.push(format!("{} is dead.",&victim.name));
+                        }
+                        dead.push(entity)
+                    }
+                    Some(_) => console::log("You are Dead") 
+
+                }
+                }
             }
         }
 
