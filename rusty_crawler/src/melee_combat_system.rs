@@ -1,6 +1,5 @@
 use specs::prelude::*;
 use super::{CombatStats,WantsToMelee,Name,SufferDamage,gamelog::GameLog};
-use rltk::console;
 
 pub struct MeleeCombatSystem{}
 
@@ -16,7 +15,7 @@ impl<'a> System<'a> for MeleeCombatSystem{
     fn run(&mut self,data: Self::SystemData){
         let (entities, mut log, mut wants_melee, names, combat_stats, mut inflict_damage) = data;
         
-        for(_entity,mut wants_melee, name, stats) in (&entities,&wants_melee,&names,&combat_stats).join() {
+        for(_entity, wants_melee, name, stats) in (&entities,&wants_melee,&names,&combat_stats).join() {
             if stats.hp > 0{
                 let target_stats = combat_stats.get(wants_melee.target).unwrap();
                 if target_stats.hp > 0{

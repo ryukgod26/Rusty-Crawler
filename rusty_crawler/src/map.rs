@@ -141,7 +141,7 @@ pub fn new_map_rooms_and_corridors() -> Map{
 
     let mut rng = RandomNumberGenerator::new();
 
-    for i in 0..MAX_ROOMS{
+    for _i in 0..MAX_ROOMS{
         let w = rng.range(MIN_SIZE,MAX_SIZE);
         let h = rng.range(MIN_SIZE,MAX_SIZE);
         let x = rng.roll_dice(1, map.width - w - 1) -1;
