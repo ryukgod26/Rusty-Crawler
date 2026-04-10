@@ -8,6 +8,7 @@ mod map_indexing_system;
 mod melee_combat_system;
 mod damage_system;
 mod gui;
+mod gamelog;
 pub use components::*;
 pub use map::*;
 pub use player::*;
@@ -215,6 +216,7 @@ fn main() -> rltk::BError{
     gs.ecs.insert(Point::new(player_x,player_y));
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::PreRun);
+    gs.ecs.insert(gamelog::GameLog{ entries: vec!["Welcome to Rusty Crawler".to_string() ]});
     rltk::main_loop(context,gs)
 }
 
