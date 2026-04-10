@@ -41,6 +41,27 @@ impl BaseMap for Map{
         let p2 = Point::new(idx2 % w, idx2 / w);
         rltk::DistanceAlg::Pythagoras.distance2d(p1,p2)
     }
+
+    fn get_available_exits(&self,idx: usize) -> rltk::SmallVec<[(usize,f32); 10]>{
+        let mut exits = rltk::SmallVec::new();
+        let x = idx as i32 % self.width;
+        let y = idx as i32 / self.width;
+        let w = self.width as usize;
+
+        if self.is_exit_valid(x-1,y) {exits.push((idx-1,1.0))}
+        if self.is_exit_valid(x+1,y) {exits.push((idx+1,1.0))}
+        if self.is_exit_valid(x,y-1) {exits.push((idx-w,1.0))}
+        if self.is_exit_valid(x,y+1) {exits.push((idx+w,1.0))}
+
+        // For Diagonal Movement
+        if self.is_exit_valid(x-1,y-1) {exits.push(((idx-w)-1, 1.45))}
+        if self.is_exit_valid(x+1,y-1) {exits.push(((idx-w)+1, 1.45))}
+        if self.is_exit_valid(x-1,y+1) {exits.push(((idx+w)-1, 1.45))}
+        if self.is_exit_valid(x+1,y+1) {exits.push(((idx+w)+1, 1.45))}
+
+
+         exits
+    }
 }
 
 impl Map{
@@ -81,26 +102,7 @@ fn apply_vertical_tunnel(&mut self,y1: i32,y2: i32,x: i32) {
     }
 }
 
-fn get_available_exits(&self,idx: usize) -> rltk::SmallVec<[(usize,f32); 10]>{
-    let mut exits = rltk::SmallVec::new();
-    let x = idx as i32 % self.width;
-    let y = idx as i32 / self.width;
-    let w = self.width as usize;
 
-    if self.is_exit_valid(x-1,y) {exits.push((idx-1,1.0))}
-    if self.is_exit_valid(x+1,y) {exits.push((idx+1,1.0))}
-    if self.is_exit_valid(x,y-1) {exits.push((idx-w,1.0))}
-    if self.is_exit_valid(x,y+1) {exits.push((idx+w,1.0))}
-
-    // For Diagonal Movement
-    if self.is_exit_valid(x-1,y-1) {exits.push(((idx-w)-1, 1.45))}
-    if self.is_exit_valid(x+1,y-1) {exits.push(((idx-w)+1, 1.45))}
-    if self.is_exit_valid(x-1,y+1) {exits.push(((idx+w)-1, 1.45))}
-    if self.is_exit_valid(x+1,y+1) {exits.push(((idx+w)+1, 1.45))}
-
-
-    exits
-}
 
 fn is_exit_valid(&self,x: i32,y: i32) -> bool{
     if x < 1 || x > self.width-1 || y < 1 || y > self.height-1 {return false;}
