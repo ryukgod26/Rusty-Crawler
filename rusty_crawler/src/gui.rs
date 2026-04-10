@@ -1,5 +1,5 @@
-use rltk::{ RGB, Rltk, Console };
-use super::{CombatStats, Player, GameLog};
+use rltk::{ RGB, Rltk, Point };
+use super::{CombatStats, Player, Name, Map, Position, gamelog::GameLog};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk){
@@ -26,7 +26,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk){
 }
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk){
-    let map = ecs.read_storage::<Map>();
+    let map = ecs.read_resource::<Map>();
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
 
@@ -34,7 +34,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk){
 
     if mouse_pos.0 >= map.width || mouse_pos.1 >= map.height { return; }
     let mut tooltip: Vec<String> = Vec::new();
-    for(name,position) in (&name,&positions).join(){
+    for(name,position) in (&names,&positions).join(){
         let idx = map.xy_index(position.x,position.y);
         if position.x==mouse_pos.0 && position.y==mouse_pos.1 && map.visible_tiles[idx]{
             tooltip.push(name.name.to_string());
