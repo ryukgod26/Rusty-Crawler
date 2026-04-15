@@ -151,6 +151,9 @@ fn main() -> rltk::BError{
     gs.ecs.register::<SufferDamage>();
 
     gs.ecs.insert(RunState::PreRun);
+    gs.ecs.insert(rltk::RandomNumberGenerator::new());
+    :q
+
 
     let map= Map::new_map_rooms_and_corridors();
     let(player_x,player_y) = map.rooms[0].center();
