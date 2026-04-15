@@ -9,6 +9,7 @@ mod melee_combat_system;
 mod damage_system;
 mod gui;
 mod gamelog;
+mod spawner;
 pub use components::*;
 pub use map::*;
 pub use player::*;
@@ -18,6 +19,7 @@ pub use map_indexing_system::*;
 pub use melee_combat_system::MeleeCombatSystem;
 pub use damage_system::*;
 pub use gui::*;
+pub use spawner::*;
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
@@ -164,7 +166,7 @@ fn main() -> rltk::BError{
         .build()?;
 
     let mut rng = rltk::RandomNumberGenerator::new();
-
+/*
     for (i,room) in map.rooms.iter().skip(1).enumerate(){
         let (x,y) = room.center();
         let glyph: rltk::FontCharType;
@@ -188,19 +190,15 @@ fn main() -> rltk::BError{
             .with(CombatStats{max_hp: 16,hp: 16, defense: 1,power: 4})
             .build();
         }
+*/
+    let player_entity = spawner::player(&mut gs.ecs,player_x,player_y);
 
-    let player_entity = gs.ecs.create_entity()
-        .with(Position{x:player_x, y: player_y})
-        .with(Renderable{
-            glyph: rltk::to_cp437('@'),
-            fg: RGB::named(rltk::YELLOW),
-            bg: RGB::named(rltk::BLACK),
-        })
-        .with(Player{})
-        .with(Viewshed{visible_tiles: Vec::new(),range: 8,dirty: true})
-        .with(Name{name: "Player".to_string()})
-        .with(CombatStats{max_hp: 30,hp: 30, defense: 2,power: 5})
-        .build();
+    for room in map.rooms.iter() {
+        let (x,y) = room.center();
+        spawner::random_monster(&mut gs.ecs,x,y);
+    }
+
+
 
 
     // for i in 1..=10{
