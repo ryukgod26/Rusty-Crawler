@@ -153,10 +153,11 @@ fn main() -> rltk::BError{
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<Potion>();
+    gs.ecs.register::<InBackpack>();
+    gs.ecs.register::<WantsToPickupIten>();
 
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-    :q
 
 
     let map= Map::new_map_rooms_and_corridors();
