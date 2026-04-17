@@ -151,6 +151,8 @@ fn main() -> rltk::BError{
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<SufferDamage>();
+    gs.ecs.register::<Item>();
+    gs.ecs.register::<Potion>();
 
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
@@ -194,8 +196,10 @@ fn main() -> rltk::BError{
     let player_entity = spawner::player(&mut gs.ecs,player_x,player_y);
 
     for room in map.rooms.iter() {
-        let (x,y) = room.center();
-        spawner::random_monster(&mut gs.ecs,x,y);
+//        let (x,y) = room.center();
+//        spawner::random_monster(&mut gs.ecs,x,y);
+
+        spawner::spawn_room(&mut gs.ecs,room);
     }
 
 
