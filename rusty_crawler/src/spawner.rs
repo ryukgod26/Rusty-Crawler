@@ -1,6 +1,6 @@
 use rltk::{ RGB, RandomNumberGenerator };
 use specs::prelude::*;
-use super::{ CombatStats, Player, Renderable, Name, Position, Viewshed, Monster, BlocksTile};
+use super::{ CombatStats, Player, Renderable, Name, Position, Viewshed, Monster, BlocksTile,Item,Potion};
 
 const MAPWIDTH: usize = 80;
 const MAPHEIGHT: usize = 50;
@@ -54,6 +54,7 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>(); 
         let num_monsters = rng.roll_dice(1, MAX_MONSTERS +2) -3;
+        let num_items = rng.roll_dice(1,MAX_ITEMS +2 ) -3;
 
         for _i in 0..num_monsters{
             let mut added = false;
@@ -67,6 +68,19 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
                 }
             }
         }
+
+        for _i in 0..num_items{
+            let mut added = fslse;
+            while !added{
+                let x = (room.x1 + rng.roll_dice(1,i32::abs(room.x2 - room.x1))) as usize;
+                let y = (room.y1 + rng.roll_dice(1,i32::abs(room.y2 - room.y1))) as usize;
+                let idx = (y * MAPWIDTH) + x;
+                if !item_spawn_points(&idx) {
+                    item_spawn_points.push(idx);
+                    added = true;
+                }
+            }
+        }_
     }
     let idx in monster_spawn_points.iter(){
         let x = *idx % MAPWIDTH;
@@ -74,4 +88,25 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
         random_monster(ecs, x as i32 , y as i32);
 
     }
+
+    for idx in item_spawn_points.iter(){
+        let x = *idx % MAPWIDTH;
+        let y = *idx / MAPWIDTH;
+        health_potion(ecs,x,y);
+    }
+}
+
+fn health_potion(ecs: &mut World, x: i32,y: i32){
+    ecs.
+        create_entity()
+        .with(Position {x,y})
+        .with(Renderable{
+            glyph: rltk::to_cp437('p'),
+            fg: RGB::named(rltk::MAGENTA),
+            bg: RGB::named(rltk::BLACK),
+        })
+        .with(Name{name: "Health Potion".to_string()})
+        .with(Item{})
+        .with(Potion{heal_amount: 8})
+        .build();
 }
