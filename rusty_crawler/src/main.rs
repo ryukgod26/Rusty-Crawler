@@ -26,7 +26,7 @@ use specs::prelude::*;
 
 
 #[derive(PartialEq,Copy,Clone)]
-pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
+pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory}
 
 pub struct State{
     pub ecs: World,
@@ -61,6 +61,11 @@ impl GameState for State{
             RunState::MonsterTurn =>{
                 self.run_systems();
                 newrunstate = RunState::AwaitingInput;
+            }
+            RunState::ShowInventory =>{
+                if gui::show_inventory(self,ctx) == gui::ItemMenuResult::Cancel {
+                    newrunstate = RunState::AwaitingInput;
+                }
             }
         }
 

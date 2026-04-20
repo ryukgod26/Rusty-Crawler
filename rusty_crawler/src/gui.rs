@@ -2,6 +2,9 @@ use rltk::{ RGB, Rltk, Point };
 use super::{CombatStats, Player, Name, Map, Position, gamelog::GameLog};
 use specs::prelude::*;
 
+#[derive(PartialEq,Copy,Clone)]
+pub enum ItemMenuResult(Cancel, NoResponse, Selected);
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk){
     ctx.draw_box(0,43,79,6,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK));
     let combat_stats = ecs.read_storage::<CombatStats>();
@@ -77,6 +80,41 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk){
             y += 1;
             }
             ctx.print_color(arrow_pos.x,arrow_pos.y,RGB::named(rltk::WHITE),RGB::named(rltk::GREY),&"<-".to_string());
+        }
+    }
+}
+
+pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> ItemMenuResult{
+    let player = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.fetch::<Name>();
+    let backpack = gs.ecs.fetch::<BackPack>();
+
+    let inventory = (&backpack,&names).join().filter( |item| if item.0.owner == *player);
+    let count = inventory.count();
+
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(15, y-2,31,(count+3),RGB::named(rltk::BLACK),RGB::named(rltk::WHITE));
+    ctx.print_color(18,y-2,RGB::named(rltk::YELLOW),RGB::named(rltk::BLACK),"Inventory");
+    ctx.print_color(18,count+3 as i32 +1, RGB::named(rltk::YELLOW),RGB::named(rltk::BLACK), "ESC to Cancel");
+
+    let mut j = 0;
+    for(_pack,name) in (&backpack,&names).join().filter( |item| if item.0.owner == *player) {
+        ctx.set(17,y,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK),rltk::to_cp437('('));
+        ctx.set(18,y,RGB::named(rltk::YELLOW),RGB::named(rltk::BLACK),97+j as rltk::FontCharType);
+        ctx.set(19,y,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+
+        ctx.print(21,y,&name.name.to_string());
+        y += 1;
+        j += 1;
+    }
+
+    match ctx.key{
+        None => ItemMenuResult::NoResponse,
+        Some(key) =>{
+            match key{
+                VirtualKeyCode::Escape => ItemMenuResult::Cancel,
+                _ => ItemMenuResult::NoResponse
+            }
         }
     }
 }
