@@ -37,6 +37,26 @@ impl<'a> Systen<'a> for PotionUseSystem{
                         Entities<'a>,
                         WriteStorage<'a, WantsToDrinkPotion>,
                         ReadStorage<'a, Name>,
-                        ReadStorage<'a, Potion>
+                        ReadStorage<'a, Potion>,
+                        WriteStorage<'a, CombatStats>
         );
+    
+    fn run(&mut self,data: Self::SystemData) {
+        let (player_entity, mut gamelog,entities, mut wants_drink,names,potions,mut combat_stats) = data;
+
+        for(entity,drink,stats) in (&entities,&wants_drink,&mut combat_stats).join() {
+            let potion = potions.get(drink.potion);
+            match potion{
+                None => {}
+                Some(potion) => {
+                    stats.hp = i32::min(stats.max_hp,stats.hp + potion.heal_amount);
+                    if entity == *player_entity{
+                        gamelog.entries.push(format!("You Drank {} healing {} hp",names.get(drink.potion).unwrap().name,potion.heal_amount));
+                    }
+                    entries.delete(drink.potion).expect("Deletion of Potion Failed");
+                }
+            }
+        }
+        wants_drink.clear();
+    }
 }
