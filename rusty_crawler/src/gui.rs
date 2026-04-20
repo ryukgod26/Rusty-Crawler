@@ -113,7 +113,13 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> ItemMenuResult{
         Some(key) =>{
             match key{
                 VirtualKeyCode::Escape => ItemMenuResult::Cancel,
-                _ => ItemMenuResult::NoResponse
+                _ => {
+                    let selection = rltk::letter_to_option(key);
+                    if selection > -1 && selection < count as i32{
+                        return (ItemMenuResult::Selected, Some(equippable[selection as usize]));
+                    }
+                    return (ItemMenuResult::NoResponse,None);
+                }
             }
         }
     }

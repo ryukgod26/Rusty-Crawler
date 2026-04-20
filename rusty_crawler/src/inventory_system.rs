@@ -2,6 +2,7 @@ use specs::prelude::*;
 use super::{WantsToPickupItem,Name,InBackpack,Position,gamelog::GameLog};
 
 pub struct ItemCollectionSystem{}
+pub struct PotionUseSystem{}
 
 impl<'a> System<'a> for ItemCollectionSystem{
     #[allow(clippy::type_complexity)]
@@ -27,4 +28,15 @@ impl<'a> System<'a> for ItemCollectionSystem{
         wants_pickup.clear();
     }
 
+}
+
+impl<'a> Systen<'a> for PotionUseSystem{
+    #[allow(clippy::type_complexity)]
+    type SystemData = ( ReadExpect<'a, Entity>,
+                        WriteExpect<'a, GameLog>,
+                        Entities<'a>,
+                        WriteStorage<'a, WantsToDrinkPotion>,
+                        ReadStorage<'a, Name>,
+                        ReadStorage<'a, Potion>
+        );
 }
