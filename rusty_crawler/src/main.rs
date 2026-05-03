@@ -176,6 +176,7 @@ fn main() -> rltk::BError{
     gs.ecs.register::<InBackpack>();
     gs.ecs.register::<WantsToPickupIten>();
     gs.ecs.register::<WantsToDrinkPotion>();
+    gs.ecs.register::<WantsToDropItem>();
 
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
