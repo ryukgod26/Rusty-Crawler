@@ -26,7 +26,7 @@ use specs::prelude::*;
 
 
 #[derive(PartialEq,Copy,Clone)]
-pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory}
+pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem}
 
 pub struct State{
     pub ecs: World,
@@ -74,6 +74,19 @@ impl GameState for State{
                         let item_entity = result.1.unwrap();
                         let mut intent = self.ecs.write_storage::<WantsToDrinkPotion>();
                         intent.insert(*self.ecs.fetch::<Entity>(),WantsToDrinkPotion{potion: item_entity}).except("Unable to Insert Intent");
+                        newrunstate = RunState::PlayerTurn;
+                    }
+                }
+            }
+            RunState::ShowDropMenu => {
+                let result = gui::show_drop_menu(self,ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        let mut intent = self.ecs.write_storage::<WantsToDropItem>();
+                        intent.insert(*self.ecs.fetch::<Entity>(),WantsToDropItem{item: item_entity}).except("Failed to Insert Intent");
                         newrunstate = RunState::PlayerTurn;
                     }
                 }
@@ -152,6 +165,8 @@ impl State{
         pickup.run_now(&self.ecs);
         let mut potions = PotionUseSystem{};
         potions.run_now(&self.ecs);
+        let mut drop_item = ItemDropSystem{};
+        drop_item.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
