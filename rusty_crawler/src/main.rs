@@ -10,6 +10,7 @@ mod damage_system;
 mod gui;
 mod gamelog;
 mod spawner;
+mod inventory_system;
 pub use components::*;
 pub use map::*;
 pub use player::*;
@@ -20,6 +21,7 @@ pub use melee_combat_system::MeleeCombatSystem;
 pub use damage_system::*;
 pub use gui::*;
 pub use spawner::*;
+pub use inventory_system::{ItemCollectionSystem,ItemDropSystem,PotionUseSystem};
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,RGB,Point};
 use specs::prelude::*;
@@ -106,7 +108,7 @@ impl GameState for State{
         let map = self.ecs.fetch::<Map>();
 
         let mut data = (&positions,&renderables).join().collect::<Vec<_>>();
-        data.sort_by(|&a, &b| b.1.render_order.cmp(a.1.render_order));
+        data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
 
         for (pos, render) in data{
             let idx = map.xy_index(pos.x, pos.y);
@@ -192,7 +194,7 @@ fn main() -> rltk::BError{
     gs.ecs.register::<Item>();
     gs.ecs.register::<Potion>();
     gs.ecs.register::<InBackpack>();
-    gs.ecs.register::<WantsToPickupIten>();
+    gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToDrinkPotion>();
     gs.ecs.register::<WantsToDropItem>();
 

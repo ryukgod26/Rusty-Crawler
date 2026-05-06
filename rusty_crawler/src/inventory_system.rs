@@ -1,4 +1,6 @@
 use specs::prelude::*;
+use crate::{CombatStats, Potion, WantsToDrinkPotion, WantsToDropItem};
+
 use super::{WantsToPickupItem,Name,InBackpack,Position,gamelog::GameLog};
 
 pub struct ItemCollectionSystem{}
@@ -19,8 +21,8 @@ impl<'a> System<'a> for ItemCollectionSystem{
         let (player_entity,mut gamelog, mut wants_pickup, mut pos, names, mut backpacks) = data;
 
         for pickup in wants_pickup.join(){
-            positions.remove(pickup.item);
-            backpack.insert(pickup.item, InBackpack{ owner: pickup.collected_by }).expect("Unable to insert backpack entry");
+            pos.remove(pickup.item);
+            backpacks.insert(pickup.item, InBackpack{ owner: pickup.collected_by }).expect("Unable to insert backpack entry");
 
             if pickup.collected_by == *player_entity{
                 gamelog.entries.push(format!("You Pick Up the {}",names.get(pickup.item).unwrap().name));
@@ -65,7 +67,7 @@ impl<'a> System<'a> for ItemDropSystem{
     }
 }
 
-impl<'a> Systen<'a> for PotionUseSystem{
+impl<'a> System<'a> for PotionUseSystem{
     #[allow(clippy::type_complexity)]
     type SystemData = ( ReadExpect<'a, Entity>,
                         WriteExpect<'a, GameLog>,
@@ -88,7 +90,7 @@ impl<'a> Systen<'a> for PotionUseSystem{
                     if entity == *player_entity{
                         gamelog.entries.push(format!("You Drank {} healing {} hp",names.get(drink.potion).unwrap().name,potion.heal_amount));
                     }
-                    entries.delete(drink.potion).expect("Deletion of Potion Failed");
+                    entities.delete(drink.potion).expect("Deletion of Potion Failed");
                 }
             }
         }

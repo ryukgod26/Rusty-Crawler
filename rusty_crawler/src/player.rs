@@ -1,4 +1,4 @@
-use crate::Viewshed;
+use crate::{Item, Viewshed, WantsToPickupItem, gamelog::GameLog};
 
 use super::{Position,Player,State,Map,RunState,CombatStats,WantsToMelee};
 use rltk::{Rltk,VirtualKeyCode,Point};
@@ -68,7 +68,6 @@ fn get_item(ecs: &mut World){
             pickup.insert(*player_entity,WantsToPickupItem{ collected_by: *player_entity, item }).except("Unable to insert want to pickup");
         }
     }
-
 }
 
 pub fn player_input(gs: &mut State,ctx: &mut Rltk) -> RunState{
