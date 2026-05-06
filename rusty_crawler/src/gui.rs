@@ -136,7 +136,7 @@ pub fn show_drop_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
     let count = inventory.count();
 
     let mut y = (25 - (count/2)) as i32;
-    ctx.draw_box(15,y-2,31,(count + 3), as i32,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK));
+    ctx.draw_box(15,y-2,31,(count + 3) as i32,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK));
     ctx.print_color(18,y-2,RGB::named(rltk::YELLOW),RGB::named(rltk::BLACK),"Drop Which Item?");
     ctx.print_color(18,y+count as i32+1,RGB::named(rltk::YELLOW),RGB::named(rltk::BLACK),"Esc to Cancel");
 

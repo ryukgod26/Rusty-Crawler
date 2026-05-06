@@ -1,4 +1,4 @@
-use rltk::{ RGB, RandomNumberGenerator };
+use rltk::{ RGB, RandomNumberGenerator, Rect };
 use specs::prelude::*;
 use super::{ CombatStats, Player, Renderable, Name, Position, Viewshed, Monster, BlocksTile,Item,Potion};
 
@@ -40,7 +40,7 @@ fn monster<S: ToString>(ecs: &mut World,x: i32,y: i32,glyph: rltk::FontCharType,
     ecs
         .create_entity()
         .with(Position{x,y})
-        .with(Renderable{glyph,fg: RGB::named(rltk::RED),RGB::named(rltk::BLACK),render_order: 1})
+        .with(Renderable{glyph,fg: RGB::named(rltk::RED),bg: RGB::named(rltk::BLACK),render_order: 1})
         .with(Monster{})
         .with(Name{name: name.to_string()})
         .with(BlocksTile{})
@@ -51,6 +51,7 @@ fn monster<S: ToString>(ecs: &mut World,x: i32,y: i32,glyph: rltk::FontCharType,
 
 pub fn spawn_room(ecs: &mut World, room: &Rect){
     let mut monster_spawn_points: Vec<usize> = Vec::new();
+    let mut item_spawn_points: Vec<usize> = Vec::new();
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>(); 
         let num_monsters = rng.roll_dice(1, MAX_MONSTERS +2) -3;
@@ -70,7 +71,7 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
         }
 
         for _i in 0..num_items{
-            let mut added = fslse;
+            let mut added = false;
             while !added{
                 let x = (room.x1 + rng.roll_dice(1,i32::abs(room.x2 - room.x1))) as usize;
                 let y = (room.y1 + rng.roll_dice(1,i32::abs(room.y2 - room.y1))) as usize;
@@ -80,19 +81,20 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
                     added = true;
                 }
             }
-        }_
-    }
-    let idx in monster_spawn_points.iter(){
-        let x = *idx % MAPWIDTH;
-        let y = *idx / MAPWIDTH;
-        random_monster(ecs, x as i32 , y as i32);
+        }
+    
+        for idx in monster_spawn_points.iter(){
+            let x = *idx % MAPWIDTH;
+            let y = *idx / MAPWIDTH;
+            random_monster(ecs, x as i32 , y as i32);
 
-    }
+        }
 
-    for idx in item_spawn_points.iter(){
-        let x = *idx % MAPWIDTH;
-        let y = *idx / MAPWIDTH;
-        health_potion(ecs,x,y);
+        for idx in item_spawn_points.iter(){
+            let x: usize = *idx % MAPWIDTH;
+            let y: usize = *idx / MAPWIDTH;
+            health_potion(ecs,x as i32,y as i32);
+        }
     }
 }
 

@@ -23,7 +23,7 @@ pub use gui::*;
 pub use spawner::*;
 pub use inventory_system::{ItemCollectionSystem,ItemDropSystem,PotionUseSystem};
 use visibility_system::VisibilitySystem;
-use rltk::{Rltk,GameState,RGB,Point};
+use rltk::{Rltk,GameState,Point};
 use specs::prelude::*;
 
 
@@ -242,7 +242,7 @@ fn main() -> rltk::BError{
 //        let (x,y) = room.center();
 //        spawner::random_monster(&mut gs.ecs,x,y);
 
-        spawner::spawn_room(&mut gs.ecs,room);
+        spawner::spawn_room(&mut gs.ecs, room);
     }
 
 
