@@ -129,3 +129,15 @@ fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32){
         .with(InflictsDamage{ damage: 8})
         .build();
 }
+
+fn random_item(ecs: &mut World, x: i32, y: i32){
+    let roll: i32;
+    {
+        let mut rng = ecs.write_resource::<RandomNumberGenerator>();
+        roll = rng.roll_dice(1, 2);
+    }
+    match roll{
+        1 => {health_potion(ecs, x, y)}
+        _ => {magic_missile_scroll(ecs, x, y)}
+    }
+}
