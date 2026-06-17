@@ -28,7 +28,7 @@ use specs::prelude::*;
 
 
 #[derive(PartialEq,Copy,Clone)]
-pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem}
+pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem, ShowTargeting{ range: i32, item: Entity }}
 
 pub struct State{
     pub ecs: World,
@@ -74,8 +74,17 @@ impl GameState for State{
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
-                        let mut intent = self.ecs.write_storage::<WantsToDrinkPotion>();
-                        intent.insert(*self.ecs.fetch::<Entity>(),WantsToDrinkPotion{potion: item_entity}).except("Unable to Insert Intent");
+                        let is_ranged = self.ecs.read_storage::<Ranged>();
+                        let is_item_ranged = is_ranged.get(item_entity);
+
+                        if let Some(is_item_ranged) = is_item_ranged {
+                            newrunstate = RunState::ShowTargeting{ range: is_item_ranged.range, item: item_entity};
+                        }else{
+
+                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                        
+                        intent.insert(*self.ecs.fetch::<Entity>(),WantsToUseItem{item: item_entity, target: None}).except("Unable to Insert Intent");
+                        }
                         newrunstate = RunState::PlayerTurn;
                     }
                 }

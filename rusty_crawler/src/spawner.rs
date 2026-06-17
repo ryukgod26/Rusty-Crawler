@@ -92,7 +92,7 @@ pub fn spawn_room(ecs: &mut World, room: &Rect){
         for idx in item_spawn_points.iter(){
             let x: usize = *idx % MAPWIDTH;
             let y: usize = *idx / MAPWIDTH;
-            health_potion(ecs,x as i32,y as i32);
+            random_item(ecs,x as i32,y as i32);
         }
     }
 }
