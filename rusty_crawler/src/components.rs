@@ -72,6 +72,11 @@ pub struct WantsToMelee{
     pub target: Entity
 }
 
+#[derive(Component, Debug)]
+pub struct ProvidesHealing{
+    pub heal_amount: i32
+}
+
 #[derive(Component,Debug)]
 pub struct WantsToDrinkPotion{
     pub potion: Entity

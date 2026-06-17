@@ -83,7 +83,7 @@ impl<'a> System<'a> for ItemUseSystem{
 
         for(entity,drink,stats) in (&entities,&wants_drink,&mut combat_stats).join() {
 //            let potion = potions.get(drink.potion);
-/*
+
                 let item_heals = healing.get(useitem.item);
 
             match potion{
@@ -95,7 +95,7 @@ impl<'a> System<'a> for ItemUseSystem{
                     }
                     entities.delete(drink.potion).expect("Deletion of Potion Failed");
                 }
-            }*/
+            }
 
             let consumable = consumables.get(usitem.item);
             match consumable{
