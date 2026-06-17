@@ -46,7 +46,6 @@ fn monster<S: ToString>(ecs: &mut World,x: i32,y: i32,glyph: rltk::FontCharType,
         .with(BlocksTile{})
         .with(CombatStats{ max_hp: 16,hp: 16,defense: 1,power: 4 })
         .build();
-
 }
 
 pub fn spawn_room(ecs: &mut World, room: &Rect){

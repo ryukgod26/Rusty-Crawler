@@ -4,7 +4,7 @@ use crate::{CombatStats, Potion, WantsToDrinkPotion, WantsToDropItem};
 use super::{WantsToPickupItem,Name,InBackpack,Position,gamelog::GameLog};
 
 pub struct ItemCollectionSystem{}
-pub struct PotionUseSystem{}
+pub struct ItemUseSystem{}
 pub struct ItemDropSystem{}
 
 impl<'a> System<'a> for ItemCollectionSystem{
@@ -67,7 +67,7 @@ impl<'a> System<'a> for ItemDropSystem{
     }
 }
 
-impl<'a> System<'a> for PotionUseSystem{
+impl<'a> System<'a> for ItemUseSystem{
     #[allow(clippy::type_complexity)]
     type SystemData = ( ReadExpect<'a, Entity>,
                         WriteExpect<'a, GameLog>,
@@ -82,15 +82,27 @@ impl<'a> System<'a> for PotionUseSystem{
         let (player_entity, mut gamelog,entities, mut wants_drink,names,potions,mut combat_stats) = data;
 
         for(entity,drink,stats) in (&entities,&wants_drink,&mut combat_stats).join() {
-            let potion = potions.get(drink.potion);
+//            let potion = potions.get(drink.potion);
+/*
+                let item_heals = healing.get(useitem.item);
+
             match potion{
                 None => {}
-                Some(potion) => {
+                Some(healer) => {
                     stats.hp = i32::min(stats.max_hp,stats.hp + potion.heal_amount);
                     if entity == *player_entity{
                         gamelog.entries.push(format!("You Drank {} healing {} hp",names.get(drink.potion).unwrap().name,potion.heal_amount));
                     }
                     entities.delete(drink.potion).expect("Deletion of Potion Failed");
+                }
+            }*/
+
+            let consumable = consumables.get(usitem.item);
+            match consumable{
+                None => {}
+                Some(_) => {
+                    entities.delete(useitem.item).except("Delete Failed");
+
                 }
             }
         }
