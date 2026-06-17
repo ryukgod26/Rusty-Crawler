@@ -90,6 +90,16 @@ pub struct WantsToDropItem{
     pub item: Entity
 }
 
+#[derive(Component, Debug)]
+pub struct Ranged{
+    pub range: i32
+}
+
+#[derive(Component, Debug)]
+pub struct InflictsDamage{
+    pub damage: i32
+}
+
 #[derive(Component,Debug)]
 pub struct SufferDamage{
     pub amount: Vec<i32>
