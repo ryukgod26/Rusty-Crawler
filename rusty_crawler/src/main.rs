@@ -103,7 +103,15 @@ impl GameState for State{
                 }
             }
             RunState::ShowTargeting{range, item} =>{
-                let target = gui::ranged_target(self, ctx, range);
+                let result = gui::ranged_target(self, ctx, range);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput;
+                    gui::ItemMenuResult::NoResponse =>{}
+                    gui::ItemMenuResult::Selected => {
+                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{item, target: result.1})
+                    }
+                }
             }
         }
 

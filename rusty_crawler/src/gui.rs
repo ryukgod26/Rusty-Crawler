@@ -209,7 +209,8 @@ pub fn ranged_target(gs: &mut State, ctx: &mut Rltk, range: i32) -> (ItemMenuRes
     } else{
         ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::RED));
         if ctx.left_click{
-            return ();
+            return (ItemMenuResult::Cancel, None);
         }
     }
+    (ItemMenuResult::NoResponse, None)
 }
