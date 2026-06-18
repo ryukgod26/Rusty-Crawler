@@ -77,6 +77,12 @@ pub struct ProvidesHealing{
     pub heal_amount: i32
 }
 
+#[derive(Component, Debug)]
+pub struct WantsToUseItem{
+    pub item: Entity,
+    pub target: Option<rltk::Point>
+}
+
 #[derive(Component,Debug)]
 pub struct WantsToDrinkPotion{
     pub potion: Entity

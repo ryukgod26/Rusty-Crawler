@@ -109,7 +109,8 @@ impl GameState for State{
                     gui::ItemMenuResult::NoResponse =>{}
                     gui::ItemMenuResult::Selected => {
                         let mut intent = self.ecs.write_storage::<WantsToUseItem>();
-                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{item, target: result.1})
+                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{item, target: result.1}).except("Unable to Insert Intent");
+                        newrunstate = RunState::PlayerTurn;
                     }
                 }
             }

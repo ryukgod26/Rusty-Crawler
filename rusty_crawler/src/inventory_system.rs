@@ -107,5 +107,26 @@ impl<'a> System<'a> for ItemUseSystem{
             }
         }
         wants_drink.clear();
+
+        let item_damages = inflict_damage.get(useitem.item);
+        match item_damages {
+            None =>{}
+            Some(damage) => {
+                let target_point = useitem.target.unwrap();
+                let idx = map.xy_idx(target_point.x, target_point.y);
+                used_item = false;
+
+                for mob in map.tile_content[idx].iter() {
+                    SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
+                    if entity == *player_entity{
+                        let mob_name = names.get(*mob).unwrap();
+                        let item_name = names.get(useitem.item).unwrap();
+                        gamelog.entries.push(format!("You used {} on {} damaging {} hp.", item_name.name, mob_name.name, damage.damage));
+                    }
+                    used_item = true;
+                }
+            }
+        }
+
     }
 }
