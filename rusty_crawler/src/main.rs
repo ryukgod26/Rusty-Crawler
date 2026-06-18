@@ -82,7 +82,7 @@ impl GameState for State{
                         }else{
 
                         let mut intent = self.ecs.write_storage::<WantsToUseItem>();
-                        
+                     
                         intent.insert(*self.ecs.fetch::<Entity>(),WantsToUseItem{item: item_entity, target: None}).except("Unable to Insert Intent");
                         }
                         newrunstate = RunState::PlayerTurn;
@@ -101,6 +101,9 @@ impl GameState for State{
                         newrunstate = RunState::PlayerTurn;
                     }
                 }
+            }
+            RunState::ShowTargeting{range, item} =>{
+                let target = gui::ranged_target(self, ctx, range);
             }
         }
 
