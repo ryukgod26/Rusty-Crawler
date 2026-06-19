@@ -17,6 +17,7 @@ impl<'a> System<'a> for ItemCollectionSystem{
                         ReadStorage<'a, Name>,
                         WriteStorage<'a, InBackpack>
                     );
+                        intent.insert(*self.ecs.fetch::<Entity>(),WantsToDrinkPotion{potion: item_entity}).except("Unable to Insert Intent");
     fn run(&mut self, data: Self::SystemData){
         let (player_entity,mut gamelog, mut wants_pickup, mut pos, names, mut backpacks) = data;
 
@@ -124,6 +125,33 @@ impl<'a> System<'a> for ItemUseSystem{
                         gamelog.entries.push(format!("You used {} on {} damaging {} hp.", item_name.name, mob_name.name, damage.damage));
                     }
                     used_item = true;
+                }
+            }
+        }
+
+        let mut targets: Vec<Entity> = Vec::new();
+        match useitem.target {
+            None => {targets.push(*player_entity)}
+            Some(target) => {
+                let area_effect = aoe.get(useitem.item);
+                match area_effect {
+                    None => {
+                        let idx = map.xy_idx(target.x, target.y);
+                        for mob in map.tile_content[idx].iter() {
+                            targets.push(*mob);
+                        }
+                    }
+                    Some(area_effect) => {
+                        let mut blast_tiles = rltk::field_of_view(target, area_effect.radius, &*map);
+                        blast_tiles.retain(|p| p.x>0 && p.x < map.width-1 && p.y>0 && p.y < map.height-1);
+
+                        for tile_idx in blast_tiles.iter() {
+                            let idx = map.xy_idx(tile_idx.x, tile_idx.y);
+                            for mob in map.tile_content[idx].iter() {
+                                targets.push(*mob);
+                            }
+                        }
+                    }
                 }
             }
         }
