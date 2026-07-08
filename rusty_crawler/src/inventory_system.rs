@@ -130,6 +130,28 @@ impl<'a> System<'a> for ItemUseSystem{
             }
         }
 
+        let mut add_confusion = Vec::new();
+        {
+            let causes_confusion = confusion.get(useitem.item);
+            match causes_confusion{
+                None => {}
+                Some(confusion) => {
+                    used_item = false;
+                    for mob in targets.iter(){
+                        add_confusion.push((*mob, confusion.turns));
+                        if entity == *player_entity{
+                            let mob_name = names.get(*mob).unwrap();
+                            let item_name = names.get(useitem.item).unwrap();
+                            gamelog.entries.push(format!("You used {} on {}, confusing them.", item_name.name, mob_name.name));
+                        }
+                    }
+                }
+            }
+        }
+        for mob in add_confusion.iter(){
+            confused.insert(mob.0, Confusion{turns:mob.1}).except("Unable to Insert Status.");
+        }
+
         let mut targets: Vec<Entity> = Vec::new();
         match useitem.target {
             None => {targets.push(*player_entity)}
