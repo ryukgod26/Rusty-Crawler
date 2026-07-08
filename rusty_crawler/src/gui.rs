@@ -7,6 +7,19 @@ use specs::prelude::*;
 #[derive(PartialEq,Copy,Clone)]
 pub enum ItemMenuResult {Cancel, NoResponse, Selected}
 
+#[derive(PartialEq, Copy, Clone)]
+pub enum MainMenuSelection{
+    NewGame,
+    LoadGame,
+    Quit
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum MainMenuResult{
+    NoSelection{ selected: MainMenuSelection },
+    Selected{ selected: MainMenuSelection}
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk){
     ctx.draw_box(0,43,79,6,RGB::named(rltk::WHITE),RGB::named(rltk::BLACK));
     let combat_stats = ecs.read_storage::<CombatStats>();
