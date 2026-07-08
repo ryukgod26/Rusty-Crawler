@@ -22,6 +22,17 @@ impl <'a> System<'a> for MonsterAI{
         if *runstate != RunState::MonsterTurn { return; }
 
         for (entity ,mut viewshed,_monster,mut pos) in (&entities,&mut viewshed, &monster, &mut position).join(){
+
+            let mut can_act = true;
+            let is_confused = confused.get_mut(entity);
+            if let Some(i_am_confused) = is_confused{
+                i_am_confused.turns -= 1;
+                if i_am_confused.turns < 1{
+                    confused.remove(entuty);
+                }
+                can_act = false;
+            }
+            if can_act{
                 let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x,pos.y),*player_pos);
                 if distance < 1.5{
                     wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
@@ -43,6 +54,7 @@ impl <'a> System<'a> for MonsterAI{
                 }
 //            console::log("Monster Exists");
             }
+        }
         }
     }
 }
