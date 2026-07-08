@@ -87,14 +87,18 @@ impl<'a> System<'a> for ItemUseSystem{
 
                 let item_heals = healing.get(useitem.item);
 
-            match potion{
+            match item_heals{
                 None => {}
                 Some(healer) => {
-                    stats.hp = i32::min(stats.max_hp,stats.hp + potion.heal_amount);
-                    if entity == *player_entity{
-                        gamelog.entries.push(format!("You Drank {} healing {} hp",names.get(drink.potion).unwrap().name,potion.heal_amount));
+                    for target in targets.iter(){
+                        let stats = combat_stats.get_mut(*target);
+                        if let Some(stats) = stats{
+                            stats.hp = i32::min(stats.max_hp, stats.hp + healer.heal_amount);
+                            if entity == *player_entity{
+                                gamelog.entries.push(format!("You used {}, healing {} hp", names.get(useitem.item).unwrap().name, healer.heal_amount));
+                            }
+                        }
                     }
-                    entities.delete(drink.potion).expect("Deletion of Potion Failed");
                 }
             }
 
@@ -113,16 +117,13 @@ impl<'a> System<'a> for ItemUseSystem{
         match item_damages {
             None =>{}
             Some(damage) => {
-                let target_point = useitem.target.unwrap();
-                let idx = map.xy_idx(target_point.x, target_point.y);
                 used_item = false;
-
-                for mob in map.tile_content[idx].iter() {
+                for mob in targets.iter(){
                     SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
                     if entity == *player_entity{
                         let mob_name = names.get(*mob).unwrap();
                         let item_name = names.get(useitem.item).unwrap();
-                        gamelog.entries.push(format!("You used {} on {} damaging {} hp.", item_name.name, mob_name.name, damage.damage));
+                        gamelog.entries.push(format!("You used {} on {} , with {} damage.", item_name.name, mob_name.name, damage.damage));
                     }
                     used_item = true;
                 }
