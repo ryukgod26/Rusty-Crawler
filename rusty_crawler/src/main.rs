@@ -40,13 +40,13 @@ struct LeftWalker{}
 impl GameState for State{
     fn tick(&mut self,ctx: &mut Rltk){
 
-        ctx.cls();
-
         let mut newrunstate;
         {
             let runstate = self.ecs.fetch::<RunState>();
             newrunstate = *runstate;
         }
+
+        ctx.cls();
 
         match newrunstate{
             RunState::PreRun => {
@@ -111,6 +111,20 @@ impl GameState for State{
                         let mut intent = self.ecs.write_storage::<WantsToUseItem>();
                         intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{item, target: result.1}).except("Unable to Insert Intent");
                         newrunstate = RunState::PlayerTurn;
+                    }
+                }
+            }
+
+            RunState::MainMenu{..} => {
+                let result = gui::main_menu(self, ctx);
+                match result{
+                    gui::MainMenuResult::NoSelection{ selected } => newrunstate = RunState::MainMenu{menu_selection: selected},
+                    gui::MainMenuResult::Selected{ selected } => {
+                        match selected{
+                            gui::MainMenuSelection::NewGame => newrunstate = RunState::PreRun,
+                            gui::MainMenuSelection::LoadGame => newrunstate = RunState::PreRun,
+                            gui::MainMenuSelection::Quit => { ::std::process::exit(0);}
+                        }
                     }
                 }
             }
