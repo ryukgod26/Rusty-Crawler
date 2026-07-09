@@ -26,6 +26,7 @@ use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,Point};
 use specs::prelude::*;
 
+extern crate serde;
 
 #[derive(PartialEq,Copy,Clone)]
 pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem, ShowTargeting{ range: i32, item: Entity }, MainMenu{ menu_selection: gui::MainMenuSelection}, SaveGame}
@@ -129,6 +130,8 @@ impl GameState for State{
                 }
             }
             RunState::SaveGame => {
+                let data = serde_json::to_string(&*self.ecs.fetch::<Map>()).unwrap();
+                println("{}", data);
                 newrunstate = RunState::MainMenu{ menu_selection: gui::MainMenuSelection::LoadGame };
             }
         }
