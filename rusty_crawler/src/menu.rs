@@ -9,7 +9,6 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult{
         } else{
             ctx.print_color_centered(24, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Begin New Game");
         }
-    }
 
     if selection == MainMenuSelection::LoadGame{
         ctx.print_color_centered(25, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), "Load Game");
@@ -22,4 +21,36 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult{
     } else{
         ctx.print_color_centered(26, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Quit");
     }
+
+    match ctx.key{
+        None => return MainMenuResult::NoSelection{ selected: selection }
+        Some(key) => {
+            match key{
+                VirtualKeyCode::Escape => { return MainMenuResult::NoSelection{ selected::MainMenuSelection::Quit } }
+                VirtualKeyCode::Up => {
+                    let newselection;
+                    match selection{
+                        MainMenuSelection::NewGame => newselection = MainMenuSelection::Quit,
+                        MainMenuSelection::LoadGame => newselection = MainMenuSelection::NewGame,
+                        MainMenuSelection::Quit => newselection = MainMenuSelection::LoadGame
+                    }
+                    return MainMenuResult::NoSelection{ selected: newselection }
+                }
+                VirtualKeyCode::Down => {
+                    let newselection;
+                    match selection{
+                        MainMenuSelection::NewGame => newselection = MainMenuSelection::LoadGame,
+                        MainMenuSelection::LoadGame => newselection = MainMenuSelection::Quit;
+                        MainMenuSelection::Quit => newselection = MainMenuSelection::NewGame;
+                    }
+                    return MainMenuResult::NoSelection{ selected: newselection }
+                }
+                VirtualKeyCode::Return => return MainMenuResult::Selected{ selected: selection }
+                _ => return MainMenuResult::NoSelection{ selected: selection }
+            }
+            }
+        }
+    }
+    MainMenuResult::NoSelection { selected: MainMenuSelection::NewGame }
+
 }
