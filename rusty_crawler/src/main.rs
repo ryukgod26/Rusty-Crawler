@@ -28,7 +28,7 @@ use specs::prelude::*;
 
 
 #[derive(PartialEq,Copy,Clone)]
-pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem, ShowTargeting{ range: i32, item: Entity }, MainMenu{ menu_selection: gui::MainMenuSelection}}
+pub enum RunState{ AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory,ShowDropItem, ShowTargeting{ range: i32, item: Entity }, MainMenu{ menu_selection: gui::MainMenuSelection}, SaveGame}
 
 pub struct State{
     pub ecs: World,
@@ -127,6 +127,9 @@ impl GameState for State{
                         }
                     }
                 }
+            }
+            RunState::SaveGame => {
+                newrunstate = RunState::MainMenu{ menu_selection: gui::MainMenuSelection::LoadGame };
             }
         }
 
