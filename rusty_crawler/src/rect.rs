@@ -1,4 +1,4 @@
-use serde
+use serde::{Serialize, Deserialize};
 
 #[derive(PartialEq,Copy,Clone,Serialize,Deserialize)]
 pub struct Rect{

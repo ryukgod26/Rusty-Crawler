@@ -25,6 +25,7 @@ pub use inventory_system::{ItemCollectionSystem,ItemDropSystem,PotionUseSystem};
 use visibility_system::VisibilitySystem;
 use rltk::{Rltk,GameState,Point};
 use specs::prelude::*;
+use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 extern crate serde;
 
@@ -238,9 +239,11 @@ fn main() -> rltk::BError{
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToDrinkPotion>();
     gs.ecs.register::<WantsToDropItem>();
+    gs.ecs.register::<SerializeMe>();
 
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
+    gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
 
     let map= Map::new_map_rooms_and_corridors();
